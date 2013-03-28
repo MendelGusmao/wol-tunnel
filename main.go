@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	buffer_size int = 102
-	buffer      [102]byte
-	inAddr      string = "0.0.0.0:7"
-	outAddr     string = "192.168.0.255:9"
+	bufferSize int = 102
+	buffer     [102]byte
+	inAddr     string = "0.0.0.0:7"
+	outAddr    string = "192.168.0.255:9"
 )
 
 func init() {
@@ -32,7 +32,7 @@ func main() {
 	catch("listening:", err, false)
 
 	for {
-		read, err := socketIn.Read(buffer[0:buffer_size])
+		read, err := socketIn.Read(buffer[0:bufferSize])
 		catch("reading:", err, true)
 
 		if err == nil && read > 0 {
@@ -41,7 +41,7 @@ func main() {
 				catch("opening socket for writing:", err, true)
 
 				if err == nil {
-					written, err := socketOut.Write(buffer[0:buffer_size])
+					written, err := socketOut.Write(buffer[0:bufferSize])
 					catch("writing to socket:", err, true)
 
 					if err == nil && written > 0 {
@@ -68,14 +68,14 @@ func catch(description string, err error, relax bool) {
 func checkWOLPacket(packet [102]byte) bool {
 	header := []byte{255, 255, 255, 255, 255, 255}
 	mac := packet[6:12]
-	macs := []byte{}
 
 	if bytes.Equal(packet[0:6], header) {
-		for i := 1; i <= 16; i++ {
-			macs = append(macs, mac...)
+		for i := 2; i <= 16; i++ {
+			if !bytes.Equal(mac, packet[i*6:i*6+6]) {
+				return false
+			}
 		}
-		return bytes.Equal(packet[6:102], macs[0:96])
 	}
 
-	return false
+	return true
 }
