@@ -35,18 +35,16 @@ func main() {
 		read, err := socketIn.Read(buffer[0:bufferSize])
 		catch("reading:", err, true)
 
-		if err == nil && read > 0 {
-			if checkWOLPacket(buffer) {
-				socketOut, err := net.DialUDP("udp4", nil, outAddress)
-				catch("opening socket for writing:", err, true)
+		if err == nil && read > 0 && checkWOLPacket(buffer) {
+			socketOut, err := net.DialUDP("udp4", nil, outAddress)
+			catch("opening socket for writing:", err, true)
 
-				if err == nil {
-					written, err := socketOut.Write(buffer[0:bufferSize])
-					catch("writing to socket:", err, true)
+			if err == nil {
+				written, err := socketOut.Write(buffer[0:bufferSize])
+				catch("writing to socket:", err, true)
 
-					if err == nil && written > 0 {
-						fmt.Println(written, "bytes written")
-					}
+				if err == nil && written > 0 {
+					fmt.Println(written, "bytes written")
 				}
 			}
 		}
