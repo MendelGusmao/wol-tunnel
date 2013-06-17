@@ -25,14 +25,16 @@ var (
 )
 
 func TestCheckWOLPacket(t *testing.T) {
-	if !checkWOLPacket(packet) {
+	_, ok := checkWOLPacket(packet)
+	if !ok {
 		t.Fatal()
 	}
 }
 
 func TestCheckWOLPacket2(t *testing.T) {
 	packet[30] = 89
-	if checkWOLPacket(packet) {
+	_, ok := checkWOLPacket(packet)
+	if ok {
 		t.Fatal()
 	}
 }
